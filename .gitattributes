@@ -1,0 +1,11 @@
+# Fuerza LF para todos los archivos de texto
+* text eol=lf
+
+# Ignorar archivos binarios
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.exe binary
+*.dll binary
+*.lock binary
