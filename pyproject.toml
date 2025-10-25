@@ -5,7 +5,9 @@ description = "API para sistema de asistencia biométrica offline"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "alembic>=1.17.0",
     "fastapi>=0.120.0",
+    "numpy>=2.3.4",
     "passlib[bcrypt]>=1.7.4",
     "psycopg2>=2.9.11",
     "pydantic-settings>=2.11.0",
@@ -13,6 +15,7 @@ dependencies = [
     "python-dotenv>=1.1.1",
     "python-jose[cryptography]>=3.5.0",
     "sqlalchemy>=2.0.44",
+    "tensorflow>=2.20.0",
     "uvicorn[standard]>=0.38.0",
 ]
 

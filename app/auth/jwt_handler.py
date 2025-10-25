@@ -6,7 +6,8 @@ Un "token" que identifica al dispositivo Android.
 Como una "tarjeta de acceso" que expira después de un tiempo.
 """
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
+from fastapi import HTTPException, status
 from jose import JWTError, jwt
 from app.core.config import get_settings
 
@@ -26,8 +27,11 @@ def create_access_token(data: dict) -> str:
         # Devuelve: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
     """
     to_encode = data.copy()
-    # El token expira en 30 minutos (configurado en .env)
-    expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    # El token expira en 15 minutos (configurado en .env)
+
+    expire = datetime.now(timezone.utc) + timedelta(
+        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+    )
     to_encode.update({"exp": expire})
     # Crear el token
     encoded_jwt = jwt.encode(
@@ -48,8 +52,15 @@ def verify_token(token: str) -> dict:
     """
     try:
         payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+            token,
+            settings.SECRET_KEY,
+            algorithms=[settings.ALGORITHM],
+            # options={"verify_exp": True},
+            # leeway=60  # permite hasta 60 seg de diferencia de reloj
         )
         return payload
-    except JWTError as e:
-        raise Exception(f"Token inválido: {str(e)}")
+    except JWTError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token inválido o expirado",
+        )

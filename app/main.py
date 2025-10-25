@@ -9,6 +9,9 @@ from app.core.config import get_settings
 from app.db.database import engine, Base
 from app.routes import worker_routes, attendance_routes
 from app.auth.jwt_handler import create_access_token
+from app.models.token_request import TokenRequest
+
+from datetime import datetime, timezone
 
 settings = get_settings()
 
@@ -48,10 +51,9 @@ async def root():
 
 # Endpoint para obtener token (solo para testing)
 @app.post("/auth/token")
-async def get_token(device_id: str):
+async def get_token(request: TokenRequest):
     """
         Genera un token JWT para un dispositivo.
-
         En producción, esto debería requerir credenciales.
         Para el MVP, simplificamos.
 
@@ -77,7 +79,15 @@ async def get_token(device_id: str):
         Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
     ```
     """
-    token = create_access_token(data={"device_id": device_id})
+    # token = create_access_token(data={"device_id": request.device_id})
+    token = create_access_token({"device_id": "tablet_001"})
+    print("Token:", token)
+
+    import jwt
+
+    decoded = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+    print("Exp timestamp:", decoded["exp"])
+    print("Exp datetime:", datetime.fromtimestamp(decoded["exp"], tz=timezone.utc))
     return {"access_token": token, "token_type": "bearer"}
 
 

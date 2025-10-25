@@ -17,10 +17,8 @@ engine = create_engine(
     pool_size=5,  # Número de conexiones en el pool
     max_overflow=10,
 )
-
 # Fábrica de sesiones
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
 # Clase base para los modelos
 Base = declarative_base()
 
@@ -28,11 +26,9 @@ Base = declarative_base()
 def get_db():
     """
     Dependencia para obtener una sesión de base de datos.
-
     Se usa en los endpoints así:
         def mi_endpoint(db: Session = Depends(get_db)):
             ...
-
     Automáticamente cierra la conexión al terminar.
     """
     db = SessionLocal()

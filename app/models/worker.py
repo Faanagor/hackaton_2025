@@ -5,7 +5,7 @@ Representa la tabla 'workers' en PostgreSQL.
 
 from sqlalchemy import Column, Integer, String, LargeBinary, DateTime
 from sqlalchemy.orm import relationship
-from datetime import datetime
+from datetime import datetime, timezone
 from app.db.database import Base
 
 
@@ -27,16 +27,23 @@ class Worker(Base):
     id = Column(Integer, primary_key=True, index=True)
     uuid = Column(String, unique=True, index=True, nullable=False)
     name = Column(String, nullable=False)
-
-    # El embedding se guarda como bytes (BYTEA en PostgreSQL)
-    # En Android será FloatArray, aquí será bytes
     face_embedding = Column(LargeBinary, nullable=False)
 
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc))
+    updated_at = Column(
+        DateTime,
+        default=datetime.now(timezone.utc),
+        onupdate=datetime.now(timezone.utc),
+    )
 
     # Relación con attendance (un trabajador tiene muchas asistencias)
-    attendances = relationship("Attendance", back_populates="worker")
+    # attendances = relationship("Attendance", back_populates="worker")
+    attendances = relationship(
+        "Attendance",
+        back_populates="worker",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
     def __repr__(self):
         return f"<Worker(id={self.id}, name='{self.name}')>"

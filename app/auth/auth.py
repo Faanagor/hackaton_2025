@@ -15,7 +15,6 @@ async def get_current_device(
 ) -> dict:
     """
     Dependencia para validar que el request tenga un token válido.
-
     Se usa en endpoints protegidos así:
         @router.post("/checkin")
         async def checkin(

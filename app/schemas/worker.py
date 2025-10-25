@@ -7,7 +7,7 @@ Schemas Pydantic para validación de datos de trabajadores.
 - Genera documentación automática en Swagger
 """
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from datetime import datetime
 
 
@@ -27,7 +27,7 @@ class WorkerCreate(WorkerBase):
     uuid: str = Field(..., description="UUID generado por el dispositivo")
     face_embedding: bytes = Field(..., description="Embedding del rostro (128 floats)")
 
-    @validator("name")
+    @field_validator("name")
     def name_must_not_be_empty(cls, v):
         """Valida que el nombre no esté vacío"""
         if not v or not v.strip():
